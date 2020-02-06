@@ -42,14 +42,13 @@ public class RankingAdapter extends RecyclerView.Adapter<RankingAdapter.MyViewHo
     @NonNull
     @Override
     public RankingAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        /*View itemView = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.row_ranking, viewGroup, false);*/
+
 
         if (layoutInflater == null) {
             layoutInflater = LayoutInflater.from(viewGroup.getContext());
         }
 
-        //rowRankingBinding = DataBindingUtil.inflate(layoutInflater,R.layout.row_ranking,viewGroup,false);
+
         rowRankingBinding = DataBindingUtil.inflate(LayoutInflater.from(viewGroup.getContext()),
                 R.layout.row_ranking,viewGroup,false);
 
@@ -86,8 +85,6 @@ public class RankingAdapter extends RecyclerView.Adapter<RankingAdapter.MyViewHo
 
         RowRankingBinding rowRankingBinding;
 
-        public TextView tvTitle, tvDesc;
-        public ImageView iv;
 
         public MyViewHolder(@NonNull RowRankingBinding rowRankingBinding) {
 
@@ -97,19 +94,9 @@ public class RankingAdapter extends RecyclerView.Adapter<RankingAdapter.MyViewHo
 
 
 
-
-            //tvTitle = (TextView) itemView.findViewById(R.id.tvTitle);
-
         }
 
 
 
-
-
-        /*public void bind(Object obj){
-
-            rowRankingBinding.setVariable(BR.ranking,obj);
-            rowRankingBinding.executePendingBindings();
-        }*/
     }
 }

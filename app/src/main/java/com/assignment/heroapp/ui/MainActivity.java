@@ -1,7 +1,8 @@
-package com.assignment.heroapp;
+package com.assignment.heroapp.ui;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,12 +14,15 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.assignment.heroapp.R;
 import com.assignment.heroapp.adapter.CategoriesAdapter;
 import com.assignment.heroapp.adapter.RankingAdapter;
+import com.assignment.heroapp.database.HeroDb;
 import com.assignment.heroapp.interfaces.HeroApi;
 import com.assignment.heroapp.interfaces.MyItemClickListener;
 import com.assignment.heroapp.models.Category;
 import com.assignment.heroapp.models.MainObject;
+import com.assignment.heroapp.models.Product;
 import com.assignment.heroapp.models.Ranking;
 
 import java.util.List;
@@ -45,6 +49,10 @@ public class MainActivity extends AppCompatActivity implements Callback<MainObje
     private List<Ranking> rankingList;
     private List<Category> categoryList;
 
+    private HeroDb heroDb;
+
+    List<Category> listItem;
+    List<Ranking> rankingItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +61,8 @@ public class MainActivity extends AppCompatActivity implements Callback<MainObje
 
         recyclerView = (RecyclerView) findViewById(R.id.rv);
         rvCategories = (RecyclerView) findViewById(R.id.rvCategories);
+
+        heroDb = new HeroDb(MainActivity.this);
 
         //click listeners
 
@@ -127,18 +137,38 @@ public class MainActivity extends AppCompatActivity implements Callback<MainObje
 
             Log.e("Response success", response.message());
             Log.e("Response success", response.body().toString());
-            //Log.e("Response ", ""+response.body().toString());
 
-            /*listItem = response.body().getItem();
+            listItem = response.body().getCategories();
+            rankingItem = response.body().getRankings();
 
             if (listItem.size()!= 0){
-                Long retval = docDb.insertItems(listItem);
+                Long retval = heroDb.insertCategories(listItem);
                 Toast.makeText(MainActivity.this,retval+" rows inserted",Toast.LENGTH_SHORT).show();
+                Log.e("Shahbaz"," categories " +retval);
+
+
+                Long retval2 = heroDb.insertRankings(rankingItem);
+                Log.e("Shahbaz"," ranking" +retval2);
+
+
+
+                Long retval3 = heroDb.insertProduct(listItem);
+                Log.e("Shahbaz"," Products " +retval3);
+
+
+                Long retval4 = heroDb.insertVariants(listItem);
+                Log.e("Shahbaz"," Variants " +retval4);
+
+
+                Long retval5 = heroDb.insertRankingProducts(rankingItem);
+                Log.e("Shahbaz"," Ranking MostViewed " +retval5);
+
+
             }else {
                 Toast.makeText(MainActivity.this,"No data",Toast.LENGTH_SHORT).show();
             }
 
-            mAdapter = new MyAdapter(MainActivity.this,docDb.getAllItems());
+          /*  mAdapter = new MyAdapter(MainActivity.this,docDb.getAllItems());
             RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
             recyclerView.setLayoutManager(mLayoutManager);
             recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -146,8 +176,11 @@ public class MainActivity extends AppCompatActivity implements Callback<MainObje
             mAdapter.notifyDataSetChanged();*/
 
             //ranking
-            mAdapter = new RankingAdapter(MainActivity.this,response.body().getRankings(),this);
-            rankingList = response.body().getRankings();
+/*            mAdapter = new RankingAdapter(MainActivity.this,response.body().getRankings(),this);
+            rankingList = response.body().getRankings();*/
+
+            mAdapter = new RankingAdapter(MainActivity.this,heroDb.getAllRanking(),this);
+            rankingList = heroDb.getAllRanking();
             RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayout.HORIZONTAL,false);
             recyclerView.setLayoutManager(mLayoutManager);
             recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -155,8 +188,10 @@ public class MainActivity extends AppCompatActivity implements Callback<MainObje
             mAdapter.notifyDataSetChanged();
 
             //categories
-            categoriesAdapter = new CategoriesAdapter(MainActivity.this,response.body().getCategories(),this);
-            categoryList = response.body().getCategories();
+           // categoriesAdapter = new CategoriesAdapter(MainActivity.this,response.body().getCategories(),this);
+           // categoryList = response.body().getCategories();
+            categoriesAdapter = new CategoriesAdapter(MainActivity.this,heroDb.getAllCategories(),this);
+            categoryList = heroDb.getAllCategories();
             RecyclerView.LayoutManager categoriesLayoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayout.VERTICAL,false);
             rvCategories.setLayoutManager(categoriesLayoutManager);
             rvCategories.setItemAnimator(new DefaultItemAnimator());
@@ -188,9 +223,13 @@ public class MainActivity extends AppCompatActivity implements Callback<MainObje
 
         Log.e("shahbaz","position : "+position);
         if (isCategories){
-            Log.e("shahbaz","value : "+categoryList.get(position).getName());
+            Log.e("shahbaz","name : "+categoryList.get(position).getName());
+            Log.e("shahbaz","id : "+categoryList.get(position).getId());
+            Intent intent = new Intent(this,ProductListActivity.class);
+            startActivity(intent);
         }else {
-            Log.e("shahbaz","value : "+rankingList.get(position).getRanking());
+            Log.e("shahbaz","name : "+rankingList.get(position).getRanking());
+
         }
     }
 }

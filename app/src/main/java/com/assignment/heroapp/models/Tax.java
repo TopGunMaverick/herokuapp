@@ -4,6 +4,10 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class Tax {
+    public Tax(String name, Float value) {
+        this.name = name;
+        this.value = value;
+    }
 
     @SerializedName("name")
     @Expose

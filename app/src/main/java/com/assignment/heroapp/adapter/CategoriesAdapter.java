@@ -8,15 +8,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.assignment.heroapp.R;
 import com.assignment.heroapp.databinding.RowCategoryBinding;
-import com.assignment.heroapp.databinding.RowRankingBinding;
 import com.assignment.heroapp.interfaces.MyItemClickListener;
 import com.assignment.heroapp.models.Category;
-import com.assignment.heroapp.models.Ranking;
 
 import java.util.List;
 
@@ -39,8 +35,7 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.My
     @NonNull
     @Override
     public CategoriesAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        /*View itemView = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.row_ranking, viewGroup, false);*/
+
 
         if (layoutInflater == null) {
             layoutInflater = LayoutInflater.from(viewGroup.getContext());
@@ -49,16 +44,11 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.My
         rowCategoryBinding = DataBindingUtil.inflate(LayoutInflater.from(viewGroup.getContext()),
                 R.layout.row_category,viewGroup,false);
 
-        /*rowCategoryBinding.getRoot().findViewById(R.id.tvTitle).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-            }
-        });*/
 
         return new MyViewHolder(rowCategoryBinding);
 
-        //return null;
+
     }
 
     @Override
@@ -83,38 +73,35 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.My
     }
 
 
+
     @Override
     public int getItemCount() {
         return list.size();
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder{
 
         RowCategoryBinding rowCategoryBinding;
 
-        public TextView tvTitle, tvDesc;
-        public ImageView iv;
 
         public MyViewHolder(@NonNull RowCategoryBinding rowCategoryBinding) {
 
-            //super(view);
 
             super(rowCategoryBinding.getRoot());
             this.rowCategoryBinding = rowCategoryBinding;
 
 
-
-
-
-            //tvTitle = (TextView) itemView.findViewById(R.id.tvTitle);
-
         }
 
-
-        /*public void bind(Object obj){
-
-            rowRankingBinding.setVariable(BR.ranking,obj);
-            rowRankingBinding.executePendingBindings();
-        }*/
     }
 }
