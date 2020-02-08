@@ -64,7 +64,7 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.My
         rowCategoryBinding.tvTitle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("shahbaz","position : "+rowCategoryBinding);
+
                 myItemClickListener.onItemClick(i,v,true);
             }
         });

@@ -13,6 +13,7 @@ import com.assignment.heroapp.models.Ranking;
 import com.assignment.heroapp.models.RankingProduct;
 import com.assignment.heroapp.models.Tax;
 import com.assignment.heroapp.models.Variant;
+import com.assignment.heroapp.utils.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -103,20 +104,25 @@ public class HeroDb extends SQLiteOpenHelper {
         );
 
 
-
         // TABLE_RANKING_MOST_VIEWED Table
         db.execSQL(
                 "create table TABLE_RANKING_MOST_VIEWED " +
-                        "(mv_product_id integer primary key, mv_view_count integer)"
+                        "(mv_product_id integer primary key, mv_view_count integer, ranking_type text, foreign key (ranking_type) references rankings (ranking_type))"
         );
-
 
 
         // TABLE_RANKING_MOST_ORDERED Table
         db.execSQL(
                 "create table TABLE_RANKING_MOST_ORDERED " +
-                        "(mo_product_id integer primary key, mo_order_count integer)"
+                        "(mo_product_id integer primary key, mo_order_count integer, ranking_type text, foreign key (ranking_type) references rankings (ranking_type))"
         );
+
+        // TABLE_RANKING_MOST_SHARED Table
+        db.execSQL(
+                "create table TABLE_RANKING_MOST_SHARED " +
+                        "(ms_product_id integer primary key, ms_view_count integer, ranking_type text, foreign key (ranking_type) references rankings (ranking_type))"
+        );
+
 
     }
 
@@ -128,6 +134,7 @@ public class HeroDb extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS TABLE_VARIANTS");
         db.execSQL("DROP TABLE IF EXISTS TABLE_RANKING_MOST_VIEWED");
         db.execSQL("DROP TABLE IF EXISTS TABLE_RANKING_MOST_ORDERED");
+        db.execSQL("DROP TABLE IF EXISTS TABLE_RANKING_MOST_SHARED");
         onCreate(db);
     }
 
@@ -152,7 +159,7 @@ public class HeroDb extends SQLiteOpenHelper {
 
             retval = db.insert("TABLE_CATEGORIES", null, contentValues);
         }
-        Log.e("shahbaz","inserted" +retval);
+
         return retval;
 
     }
@@ -199,7 +206,7 @@ public class HeroDb extends SQLiteOpenHelper {
 
             retval = db.insert("TABLE_RANKINGS", null, contentValues);
         }
-        Log.e("shahbaz","ranking inserted" +retval);
+
         return retval;
 
     }
@@ -252,30 +259,101 @@ public class HeroDb extends SQLiteOpenHelper {
             }
 
         }
-        Log.e("shahbaz","products inserted " +retval);
+
         return retval;
 
     }
 
-    public List<Product> getAllProducts() {
+    public List<Product> getProducts(boolean isCategories, String type) {
+
         List<Product> list;
 
         list = new ArrayList<>();
 
         //hp = new HashMap();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res =  db.rawQuery( "select * from TABLE_PRODUCTS", null );
-        res.moveToFirst();
 
-        while(res.isAfterLast() == false){
 
-            Product product = new Product();
-            product.setId(res.getInt(res.getColumnIndex(PRODUCT_ID)));
-            product.setName(res.getString(res.getColumnIndex(PRODUCT_NAME)));
-            product.setDateAdded(res.getString(res.getColumnIndex(PRODUCT_DATE)));
-            product.setTax(new Tax(res.getString(res.getColumnIndex(PRODUCT_TAX_NAME)),res.getFloat(res.getColumnIndex(PRODUCT_TAX_VALUE))));
-            list.add(product);
-            res.moveToNext();
+        if (isCategories) {
+
+            int categoryId = Integer.parseInt(type);
+
+            Cursor res = db.rawQuery("select * from TABLE_PRODUCTS where category_id = "+categoryId, null);
+            res.moveToFirst();
+
+            while (res.isAfterLast() == false) {
+
+                Product product = new Product();
+                product.setId(res.getInt(res.getColumnIndex(PRODUCT_ID)));
+                product.setName(res.getString(res.getColumnIndex(PRODUCT_NAME)));
+                product.setDateAdded(res.getString(res.getColumnIndex(PRODUCT_DATE)));
+                product.setTax(new Tax(res.getString(res.getColumnIndex(PRODUCT_TAX_NAME)), res.getFloat(res.getColumnIndex(PRODUCT_TAX_VALUE))));
+                list.add(product);
+                res.moveToNext();
+            }
+
+        }else {
+
+            if (type.equals(Constants.MOST_VIEWED_PRODUCTS)){
+
+                Cursor res = db.rawQuery("select *" +
+                        " from TABLE_PRODUCTS" +
+                        " inner join  TABLE_RANKING_MOST_VIEWED" +
+                        " on TABLE_PRODUCTS.product_id = TABLE_RANKING_MOST_VIEWED.mv_product_id " +
+                        "order by TABLE_RANKING_MOST_VIEWED.mv_view_count desc ", null);
+                res.moveToFirst();
+
+                while (res.isAfterLast() == false) {
+
+                    Product product = new Product();
+                    product.setId(res.getInt(res.getColumnIndex(PRODUCT_ID)));
+                    product.setName(res.getString(res.getColumnIndex(PRODUCT_NAME)));
+                    product.setDateAdded(res.getString(res.getColumnIndex(PRODUCT_DATE)));
+                    product.setTax(new Tax(res.getString(res.getColumnIndex(PRODUCT_TAX_NAME)), res.getFloat(res.getColumnIndex(PRODUCT_TAX_VALUE))));
+                    list.add(product);
+                    res.moveToNext();
+                }
+
+            }else if (type.equals(Constants.MOST_ORDERED_PRODUCTS)){
+
+                Cursor res = db.rawQuery("select *" +
+                        " from TABLE_PRODUCTS" +
+                        " inner join  TABLE_RANKING_MOST_ORDERED" +
+                        " on TABLE_PRODUCTS.product_id = TABLE_RANKING_MOST_ORDERED.mo_product_id " +
+                        "order by TABLE_RANKING_MOST_ORDERED.mo_order_count desc", null);
+                res.moveToFirst();
+
+                while (res.isAfterLast() == false) {
+
+                    Product product = new Product();
+                    product.setId(res.getInt(res.getColumnIndex(PRODUCT_ID)));
+                    product.setName(res.getString(res.getColumnIndex(PRODUCT_NAME)));
+                    product.setDateAdded(res.getString(res.getColumnIndex(PRODUCT_DATE)));
+                    product.setTax(new Tax(res.getString(res.getColumnIndex(PRODUCT_TAX_NAME)), res.getFloat(res.getColumnIndex(PRODUCT_TAX_VALUE))));
+                    list.add(product);
+                    res.moveToNext();
+                }
+
+            }else if (type.equals(Constants.MOST_SHARED_PRODUCTS)){
+
+                Cursor res = db.rawQuery("select *" +
+                        " from TABLE_PRODUCTS" +
+                        " inner join  TABLE_RANKING_MOST_SHARED" +
+                        " on TABLE_PRODUCTS.product_id = TABLE_RANKING_MOST_SHARED.ms_product_id " +
+                        "order by TABLE_RANKING_MOST_SHARED.ms_view_count desc", null);
+                res.moveToFirst();
+
+                while (res.isAfterLast() == false) {
+
+                    Product product = new Product();
+                    product.setId(res.getInt(res.getColumnIndex(PRODUCT_ID)));
+                    product.setName(res.getString(res.getColumnIndex(PRODUCT_NAME)));
+                    product.setDateAdded(res.getString(res.getColumnIndex(PRODUCT_DATE)));
+                    product.setTax(new Tax(res.getString(res.getColumnIndex(PRODUCT_TAX_NAME)), res.getFloat(res.getColumnIndex(PRODUCT_TAX_VALUE))));
+                    list.add(product);
+                    res.moveToNext();
+                }
+            }
         }
         return list;
     }
@@ -302,6 +380,7 @@ public class HeroDb extends SQLiteOpenHelper {
 
                 for (int k = 0; k <  list.get(i).getProducts().get(j).getVariants().size(); k++) {
                     contentValues.put("variant_id", list.get(i).getProducts().get(j).getVariants().get(k).getId());
+                    contentValues.put("product_id", list.get(i).getProducts().get(j).getId());
                     contentValues.put("variant_color", list.get(i).getProducts().get(j).getVariants().get(k).getColor());
                     contentValues.put("variant_size", list.get(i).getProducts().get(j).getVariants().get(k).getSize());
                     contentValues.put("variant_price", list.get(i).getProducts().get(j).getVariants().get(k).getPrice());
@@ -312,19 +391,19 @@ public class HeroDb extends SQLiteOpenHelper {
             }
 
         }
-        Log.e("shahbaz","variants inserted " +retval);
+
         return retval;
 
     }
 
-    public List<Variant> getAllVariants() {
+    public List<Variant> getVariants(int prodID) {
         List<Variant> list;
 
         list = new ArrayList<>();
 
         //hp = new HashMap();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res =  db.rawQuery( "select * from TABLE_VARIANTS", null );
+        Cursor res =  db.rawQuery( "select * from TABLE_VARIANTS  where product_id = "+prodID, null );
         res.moveToFirst();
 
         while(res.isAfterLast() == false){
@@ -351,37 +430,61 @@ public class HeroDb extends SQLiteOpenHelper {
 
         //clearing db
         db.execSQL("delete from TABLE_RANKING_MOST_VIEWED");
+        db.execSQL("delete from TABLE_RANKING_MOST_ORDERED");
+        db.execSQL("delete from TABLE_RANKING_MOST_SHARED");
 
         ContentValues contentValues = new ContentValues();
         ContentValues contentValues2 = new ContentValues();
+        ContentValues contentValues3 = new ContentValues();
 
         Long retval = 0L;
         Long retval2 = 0L;
         Long retval3 = 0L;
 
         for (int i = 0; i < list.size(); i++) {
-            if(list.get(i).getRanking().equals("Most Viewed Products")){
+
+
+            if(list.get(i).getRanking().equals(Constants.MOST_VIEWED_PRODUCTS)){
+
+
                 for (int j = 0; j <list.get(i).getRankingProducts().size() ; j++) {
                     contentValues.put("mv_product_id", list.get(i).getRankingProducts().get(j).getId());
                     contentValues.put("mv_view_count", list.get(i).getRankingProducts().get(j).getViewCount());
+                    contentValues.put("ranking_type", list.get(i).getRanking());
 
                     retval = db.insert("TABLE_RANKING_MOST_VIEWED", null, contentValues);
+
+                }
+            }
+
+            if(list.get(i).getRanking().equals(Constants.MOST_ORDERED_PRODUCTS)){
+
+                for (int j = 0; j <list.get(i).getRankingProducts().size() ; j++) {
+
+                    contentValues2.put("mo_product_id", list.get(i).getRankingProducts().get(j).getId());
+                    contentValues2.put("mo_order_count", list.get(i).getRankingProducts().get(j).getOrderCount());
+                    contentValues.put("ranking_type", list.get(i).getRanking());
+
+                    retval2 = db.insert("TABLE_RANKING_MOST_ORDERED", null, contentValues2);
+
                 }
             }
 
 
-            if(list.get(i).getRanking().equals("Most OrdeRed Products")){
+            if(list.get(i).getRanking().equals(Constants.MOST_SHARED_PRODUCTS)){
                 for (int j = 0; j <list.get(i).getRankingProducts().size() ; j++) {
-                    contentValues2.put("mo_product_id", list.get(i).getRankingProducts().get(j).getId());
-                    contentValues2.put("mo_order_count", list.get(i).getRankingProducts().get(j).getOrderCount());
 
-                    retval2 = db.insert("TABLE_RANKING_MOST_ORDERED", null, contentValues2);
+                    contentValues3.put("ms_product_id", list.get(i).getRankingProducts().get(j).getId());
+                    contentValues3.put("ms_view_count", list.get(i).getRankingProducts().get(j).getShares());
+                    contentValues.put("ranking_type", list.get(i).getRanking());
+
+                    retval3 = db.insert("TABLE_RANKING_MOST_SHARED", null, contentValues3);
+
                 }
             }
 
         }
-        Log.e("shahbaz","inserted TABLE_RANKING_MOST_VIEWED " +retval);
-        Log.e("shahbaz","inserted TABLE_RANKING_MOST_ORDERED " +retval2);
+
         return retval;
 
     }

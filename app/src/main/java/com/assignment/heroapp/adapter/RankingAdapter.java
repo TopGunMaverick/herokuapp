@@ -67,7 +67,7 @@ public class RankingAdapter extends RecyclerView.Adapter<RankingAdapter.MyViewHo
         rowRankingBinding.tvTitle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("shahbaz","position : "+i);
+
                 myItemClickListener.onItemClick(i,v,false);
             }
         });

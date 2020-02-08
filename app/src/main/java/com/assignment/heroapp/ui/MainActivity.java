@@ -24,6 +24,7 @@ import com.assignment.heroapp.models.Category;
 import com.assignment.heroapp.models.MainObject;
 import com.assignment.heroapp.models.Product;
 import com.assignment.heroapp.models.Ranking;
+import com.assignment.heroapp.utils.Constants;
 
 import java.util.List;
 
@@ -58,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements Callback<MainObje
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        this.setTitle("Categories");
 
         recyclerView = (RecyclerView) findViewById(R.id.rv);
         rvCategories = (RecyclerView) findViewById(R.id.rvCategories);
@@ -135,33 +137,30 @@ public class MainActivity extends AppCompatActivity implements Callback<MainObje
                 progressDoalog.dismiss();
             }
 
-            Log.e("Response success", response.message());
-            Log.e("Response success", response.body().toString());
-
             listItem = response.body().getCategories();
             rankingItem = response.body().getRankings();
 
             if (listItem.size()!= 0){
                 Long retval = heroDb.insertCategories(listItem);
                 Toast.makeText(MainActivity.this,retval+" rows inserted",Toast.LENGTH_SHORT).show();
-                Log.e("Shahbaz"," categories " +retval);
+
 
 
                 Long retval2 = heroDb.insertRankings(rankingItem);
-                Log.e("Shahbaz"," ranking" +retval2);
+
 
 
 
                 Long retval3 = heroDb.insertProduct(listItem);
-                Log.e("Shahbaz"," Products " +retval3);
+
 
 
                 Long retval4 = heroDb.insertVariants(listItem);
-                Log.e("Shahbaz"," Variants " +retval4);
+
 
 
                 Long retval5 = heroDb.insertRankingProducts(rankingItem);
-                Log.e("Shahbaz"," Ranking MostViewed " +retval5);
+
 
 
             }else {
@@ -203,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements Callback<MainObje
             if (progressDoalog.isShowing()){
                 progressDoalog.dismiss();
             }
-            Log.e("Response Failed", response.message());
+
         }
 
     }
@@ -214,21 +213,33 @@ public class MainActivity extends AppCompatActivity implements Callback<MainObje
         if (progressDoalog.isShowing()){
             progressDoalog.dismiss();
         }
-        Log.e("Response fail", t.getMessage());
+
 
     }
 
     @Override
     public void onItemClick(int position, View v, boolean isCategories) {
 
-        Log.e("shahbaz","position : "+position);
+
+
+        Intent intent = new Intent(this,ProductListActivity.class);
+
         if (isCategories){
-            Log.e("shahbaz","name : "+categoryList.get(position).getName());
-            Log.e("shahbaz","id : "+categoryList.get(position).getId());
-            Intent intent = new Intent(this,ProductListActivity.class);
+
+
+            intent.putExtra(Constants.ID,categoryList.get(position).getId());
+            intent.putExtra(Constants.IS_CATEGORY,isCategories);
+
             startActivity(intent);
+
         }else {
-            Log.e("shahbaz","name : "+rankingList.get(position).getRanking());
+
+            intent.putExtra(Constants.ID,rankingList.get(position).getRanking());
+            intent.putExtra(Constants.IS_CATEGORY,isCategories);
+
+            startActivity(intent);
+
+
 
         }
     }

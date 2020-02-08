@@ -46,7 +46,9 @@ public class VariantsAdapter extends RecyclerView.Adapter<VariantsAdapter.MyView
     public void onBindViewHolder(@NonNull VariantsAdapter.MyViewHolder myViewHolder, int i) {
         Variant item = list.get(i);
 
-        rowVariantsBinding.tvTitle.setText(item.getColor());
+        rowVariantsBinding.tvColor.setText("Color : "+item.getColor());
+        rowVariantsBinding.tvSize.setText("Size : "+item.getSize());
+        rowVariantsBinding.tvPrice.setText("Price : "+item.getPrice());
 
     }
 
