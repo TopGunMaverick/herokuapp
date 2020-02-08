@@ -489,12 +489,6 @@ public class HeroDb extends SQLiteOpenHelper {
 
     }
 
-    public List<Product> getMostViewedProducts() {
-        List<Product> list=null;
-
-
-        return list;
-    }
 
 
 }

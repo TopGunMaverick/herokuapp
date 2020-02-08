@@ -7,7 +7,6 @@ import retrofit2.http.GET;
 
 public interface HeroApi {
 
-    //https://stark-spire-93433.herokuapp.com/json
     public static String base_url = "https://stark-spire-93433.herokuapp.com";
 
     @GET("/json")

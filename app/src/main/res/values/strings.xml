@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">HeroApp</string>
+    <string name="app_name">Hero</string>
+    <string name="title_categories">Categories</string>
+    <string name="title_products">Products</string>
+    <string name="title_variants">Product Variants</string>
+    <string name="no_data">Oop\'s currently no data available.</string>
 </resources>

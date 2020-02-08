@@ -23,14 +23,10 @@ import com.assignment.heroapp.utils.Constants;
 import java.util.List;
 
 public class VariantsListActivity extends AppCompatActivity {
-    private RecyclerView rv;
 
     private VariantsAdapter mVariantsAdapter;
 
-    private MyItemClickListener myItemClickListener;
-    ProgressDialog progressDoalog;
     private HeroDb heroDb;
-    private List<Variant> variantList;
     private int productId;
     private String productName, taxName,taxValue;
     private ActivityVariantsListBinding activityVariantsListBinding;
@@ -41,7 +37,7 @@ public class VariantsListActivity extends AppCompatActivity {
 
         activityVariantsListBinding = DataBindingUtil.setContentView(this,R.layout.activity_variants_list);
 
-        this.setTitle("Product Varients");
+        this.setTitle(getResources().getString(R.string.title_variants));
 
         heroDb = new HeroDb(VariantsListActivity.this);
 

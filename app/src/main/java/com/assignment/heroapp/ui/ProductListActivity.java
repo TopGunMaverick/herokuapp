@@ -2,6 +2,7 @@ package com.assignment.heroapp.ui;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -10,11 +11,13 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.assignment.heroapp.R;
 import com.assignment.heroapp.adapter.CategoriesAdapter;
 import com.assignment.heroapp.adapter.ProductsAdapter;
 import com.assignment.heroapp.database.HeroDb;
+import com.assignment.heroapp.databinding.ActivityProductListBinding;
 import com.assignment.heroapp.interfaces.MyItemClickListener;
 import com.assignment.heroapp.models.Product;
 import com.assignment.heroapp.utils.Constants;
@@ -23,26 +26,24 @@ import java.util.List;
 
 public class ProductListActivity extends AppCompatActivity implements  MyItemClickListener  {
 
-    private RecyclerView rvProducts;
 
     private ProductsAdapter mProductssAdapter;
 
-    private MyItemClickListener myItemClickListener;
-    ProgressDialog progressDoalog;
     private HeroDb heroDb;
     private List<Product> productList;
 
     private boolean isCategories;
     private int categoryId;
     private String rankingType;
-
+    ActivityProductListBinding productListBinding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_product_list);
-        this.setTitle("Products");
-        rvProducts = (RecyclerView)findViewById(R.id.rvProducts);
+        productListBinding = DataBindingUtil.setContentView(this,R.layout.activity_product_list);
+
+        this.setTitle(getResources().getString(R.string.title_products));
+
         heroDb = new HeroDb(ProductListActivity.this);
 
         isCategories = getIntent().getExtras().getBoolean(Constants.IS_CATEGORY);
@@ -69,13 +70,15 @@ public class ProductListActivity extends AppCompatActivity implements  MyItemCli
             productList = heroDb.getProducts(isCategories,rankingType);
         }
 
-
+        if( productList.size()>0){
+            productListBinding.tvNoData.setVisibility(View.GONE);
+        }
 
         mProductssAdapter = new ProductsAdapter(ProductListActivity.this,productList,this);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayout.VERTICAL,false);
-        rvProducts.setLayoutManager(mLayoutManager);
-        rvProducts.setItemAnimator(new DefaultItemAnimator());
-        rvProducts.setAdapter(mProductssAdapter);
+        productListBinding.rvProducts.setLayoutManager(mLayoutManager);
+        productListBinding.rvProducts.setItemAnimator(new DefaultItemAnimator());
+        productListBinding.rvProducts.setAdapter(mProductssAdapter);
         mProductssAdapter.notifyDataSetChanged();
     }
 
